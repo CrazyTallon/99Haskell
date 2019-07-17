@@ -38,3 +38,19 @@ myLength xs = listLength xs 0
                     listLength :: [a] -> Int -> Int
                     listLength [] n = n
                     listLength (x:xs) n = listLength xs (n + 1)
+
+myReverse :: [a] -> [a]
+myReverse [] = []
+myReverse (x:xs) = myReverse xs ++ [x]
+
+isPalindrome :: Eq a => [a] -> Bool
+isPalindrome [] = True
+isPalindrome xs | as == bs = True
+                | otherwise = False
+                    where 
+                        (as, bs) = splitList xs []
+
+                        splitList :: [a] -> [a] -> ([a],[a])
+                        splitList (l:ls) gs | myLength gs == myLength ([l] ++ ls) = (gs,[l] ++ ls)
+                                            | myLength gs > myLength ls = error "adding list greater than subtracting list"
+                                            | otherwise = splitList ls $ gs ++ [l]
