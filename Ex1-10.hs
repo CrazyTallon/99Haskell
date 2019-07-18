@@ -54,3 +54,43 @@ isPalindrome xs | as == bs = True
                         splitList (l:ls) gs | myLength gs == myLength ([l] ++ ls) = (gs,[l] ++ ls)
                                             | myLength gs > myLength ls = error "adding list greater than subtracting list"
                                             | otherwise = splitList ls $ gs ++ [l]
+
+
+data NestedList a = Elem a | List [NestedList a]
+flatten :: NestedList a -> [a]
+flatten (Elem a) = [a]
+flatten (List []) = []
+flatten (List [n]) = flatten n
+flatten (List (n:ns)) = flatten n ++ flatten (List ns)
+
+
+compress :: Eq a => [a] -> [a]
+compress [] = []
+compress [a] = [a]
+compress (x:x':xs)  | xs == [] && x == x' = [x]
+                    | xs == [] && x /= x' = [x, x']
+                    | x == x' = compress ([x] ++ xs)
+                    | otherwise = [x] ++ compress ([x'] ++ xs)
+
+
+pack :: Eq a => [a] -> [[a]]
+pack [] = []
+pack [a] = [[a]]
+pack (x:xs) = [set] ++ (pack remainding)
+                where
+                    (set, remainding) = subSet x [x] xs
+
+                    subSet :: Eq a => a -> [a] ->[a] -> ([a],[a])
+                    subSet a ss [] = (ss, [])
+                    subSet a ss (r:rs)  | a == r = subSet a (ss ++ [r]) rs
+                                        | otherwise = (ss, ([r] ++ rs))
+
+
+encode :: Eq a => [a] -> [(a, Int)]
+encode [] = []
+encode xs = zip compressed subSetSizes
+            where
+                packed = pack xs
+                subSetSizes = map myLength packed
+                compressed = compress xs
+
